@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "82621912352",
+    "project_id": "spiral-f023e",
+    "storage_bucket": "spiral-f023e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82621912352:android:e21d92ca42ed06c6b63345",
+        "android_client_info": {
+          "package_name": "com.example.spiral"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaa_9mF69vhwGDgapfEJVQLIQ8PaMaWtg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

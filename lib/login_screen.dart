@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:spiral/widgets/auth_options.dart';
 import 'package:spiral/widgets/custom_text_field.dart';
 import 'package:spiral/widgets/login_button.dart';
@@ -13,14 +14,45 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _isPasswordVisible = false.obs; // Observable for GetX
+  final _isPasswordVisible = false.obs;
 
-  void _validateAndLogin() {
+  // Login or sign up with Firebase
+  Future<void> _validateAndLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
-      Get.to(() => HomeDashboardScreen());
+      try {
+        // Print email and password for debugging
+        print("Email: ${_emailController.text.trim()}");
+        print("Password: ${_passwordController.text}");
+
+        final userCredential = await _auth.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+        if (userCredential.user != null) {
+          Get.offAll(() => HomeDashboardScreen());
+        }
+      } on FirebaseAuthException catch (e) {
+        // Specific error handling
+        print("Firebase Auth Error: ${e.message}");
+
+        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+          final userCredential = await _auth.createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
+          if (userCredential.user != null) {
+            Get.offAll(() => HomeDashboardScreen());
+          }
+        } else {
+          print("Error: ${e.message}");
+        }
+      } catch (e) {
+        print("Unexpected Error: $e");
+      }
     }
   }
 
