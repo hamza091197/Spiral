@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Import GetX
 import 'package:spiral/profile_edit_screen.dart';
 import 'pin_entry_screen.dart'; // Import the PinEntryScreen class
 
@@ -11,10 +12,7 @@ class CallerIDScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PinEntryScreen()), // Navigating to PinEntryScreen
-          ),
+          onPressed: () => Get.back(), // Replace Navigator.push with Get.back() for back navigation
         ),
         title: Text('Caller ID'),
         actions: [
@@ -24,10 +22,7 @@ class CallerIDScreen extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditProfileScreen()), // Navigating to PinEntryScreen
-            ),
+            onPressed: () => Get.to(EditProfileScreen()), // Replace Navigator.push with Get.to() for navigating to EditProfileScreen
           ),
         ],
       ),

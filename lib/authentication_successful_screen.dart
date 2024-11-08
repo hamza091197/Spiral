@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:async';
 
 import 'package:spiral/home_dashboard_screen.dart';
@@ -19,10 +20,7 @@ class _AuthenticationSuccessfulScreenState
 
     // Set a timer to automatically navigate after 3 seconds
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeDashboardScreen()),
-      );
+      Get.off(() => HomeDashboardScreen());
     });
   }
 

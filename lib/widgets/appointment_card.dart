@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:spiral/pin_entry_screen.dart';
 
 class AppointmentCard extends StatelessWidget {
@@ -51,9 +52,7 @@ class AppointmentCard extends StatelessWidget {
               // Lighter White Divider line
               Container(
                 height: 1,
-                // Set height of the line
                 color: Colors.white.withOpacity(0.4),
-                // Lighter white line using opacity
                 margin: EdgeInsets.symmetric(
                     vertical: 10), // Space around the divider
               ),
@@ -89,11 +88,8 @@ class AppointmentCard extends StatelessWidget {
                 color: Colors.white, // Set icon color to white
               ),
               onPressed: () {
-                // Navigate to the PinEntryScreen when the icon is pressed
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => PinEntryScreen()),
-                );
+                // Navigate to the PinEntryScreen when the icon is pressed using GetX
+                Get.to(() => PinEntryScreen());
               },
             ),
           ),

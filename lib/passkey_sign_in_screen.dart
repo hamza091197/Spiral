@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Import GetX
 import 'package:spiral/login_screen.dart';
 import 'authentication_successful_screen.dart'; // Import the success screen
 
@@ -6,12 +7,8 @@ class PasskeySignInScreen extends StatelessWidget {
   const PasskeySignInScreen({super.key});
 
   void _onSignInWithPasskey(BuildContext context) {
-    // Navigate to the Authentication Successful screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const AuthenticationSuccessfulScreen()),
-    );
+    // Navigate to the Authentication Successful screen using GetX
+    Get.to(() => const AuthenticationSuccessfulScreen());
   }
 
   @override
@@ -96,10 +93,7 @@ class PasskeySignInScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    ),
+                    onPressed: () => Get.to(() => LoginScreen()), // Use GetX for navigation
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(

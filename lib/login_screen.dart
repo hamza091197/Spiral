@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:spiral/widgets/auth_options.dart';
 import 'package:spiral/widgets/custom_text_field.dart';
 import 'package:spiral/widgets/login_button.dart';
 import 'home_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -14,16 +15,12 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // Key to manage form state
-  bool _isPasswordVisible = false;
+  final _formKey = GlobalKey<FormState>();
+  final _isPasswordVisible = false.obs; // Observable for GetX
 
   void _validateAndLogin() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Form is valid, navigate to HomeDashboardScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomeDashboardScreen()),
-      );
+      Get.to(() => HomeDashboardScreen());
     }
   }
 
@@ -32,8 +29,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('images/image.jpg'), fit: BoxFit.cover)),
+          image: DecorationImage(
+            image: AssetImage('images/image.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             return 'Please enter your email';
                           }
                           if (!RegExp(
-                                  r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                              r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                               .hasMatch(value)) {
                             return 'Please enter a valid email address';
                           }
@@ -88,22 +88,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      CustomTextField(
+                      Obx(() => CustomTextField(
                         controller: _passwordController,
                         label: 'Password',
                         hintText: 'Password',
-                        isPassword: !_isPasswordVisible,
-                        // Hide password when false
+                        isPassword: !_isPasswordVisible.value,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible
+                            _isPasswordVisible.value
                                 ? Icons.visibility
                                 : Icons.visibility_off,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
+                            _isPasswordVisible.value = !_isPasswordVisible.value;
                           },
                         ),
                         validator: (value) {
@@ -112,12 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           return null;
                         },
-                      ),
+                      )),
                       const SizedBox(height: 16),
                       LoginButton(
                         onPressed: _validateAndLogin,
-                        buttonText:
-                            'Sign in', // Pass the buttonText parameter here
+                        buttonText: 'Sign in',
                       ),
                       const SizedBox(height: 16),
                       const Center(

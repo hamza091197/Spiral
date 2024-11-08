@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Import GetX
 import 'package:spiral/pin_entry_screen.dart';
 
 class FingerAuthenticationLayout extends StatelessWidget {
@@ -64,10 +65,7 @@ class FingerAuthenticationLayout extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PinEntryScreen()),
-                      ),
+                      onPressed: () => Get.to(PinEntryScreen()), // Use Get.to() instead of Navigator.push
                       child: Text(
                         'Cancel',
                         style: TextStyle(

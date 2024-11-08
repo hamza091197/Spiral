@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spiral/login_screen.dart';
-import 'package:spiral/widgets/login_button.dart'; // Import LoginButton
+import 'package:spiral/widgets/login_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -11,30 +11,34 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _formKey = GlobalKey<FormState>(); // Key for form validation
+  final _formKey = GlobalKey<FormState>();
+  final phoneController = TextEditingController();
   String? email, phoneNumber, career, address;
   bool emailValid = true,
       phoneValid = true,
       careerValid = true,
       addressValid = true;
 
-  final emailRegEx = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,}$");
+  final emailRegEx =
+      RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
   final phoneRegEx = RegExp(r"^\+?[0-9]{10,13}$");
-
-  TextEditingController phoneController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     phoneController.addListener(() {
-      // Prepend '+' if it's not there already
-      if (!phoneController.text.startsWith('+')) {
-        String text = phoneController.text;
-        if (text.isNotEmpty) {
-          phoneController.text = '+$text';
-          phoneController.selection = TextSelection.fromPosition(
-              TextPosition(offset: phoneController.text.length));
-        }
+      // Automatically adds '+' if not present and ensures the length does not exceed 13 characters
+      if (!phoneController.text.startsWith('+') &&
+          phoneController.text.isNotEmpty) {
+        phoneController.text = '+${phoneController.text}';
+        phoneController.selection =
+            TextSelection.collapsed(offset: phoneController.text.length);
+      }
+      // Limit the phone number to 13 digits (including '+')
+      if (phoneController.text.length > 13) {
+        phoneController.text = phoneController.text.substring(0, 13);
+        phoneController.selection =
+            TextSelection.collapsed(offset: phoneController.text.length);
       }
     });
   }
@@ -45,6 +49,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
+  void _validateAndSave() {
+    setState(() {
+      emailValid = email?.isNotEmpty ?? false;
+      phoneValid = phoneNumber?.isNotEmpty ?? false;
+      careerValid = career?.isNotEmpty ?? false;
+      addressValid = address?.isNotEmpty ?? false;
+    });
+
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Changes saved successfully!')),
+      );
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    }
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    IconData? icon,
+    bool isNumeric = false,
+    bool isEmail = false,
+    required ValueChanged<String> onChanged,
+    required bool isValid,
+    required String? Function(String?) validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey)),
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(
+                  color: isValid ? Colors.grey : Colors.red, width: 1),
+            ),
+            child: TextFormField(
+              onChanged: onChanged,
+              keyboardType: isEmail
+                  ? TextInputType.emailAddress
+                  : isNumeric
+                      ? TextInputType.numberWithOptions(decimal: false)
+                      : TextInputType.text,
+              inputFormatters: isNumeric
+                  ? [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(13),
+                    ]
+                  : [],
+              controller: icon == Icons.phone ? phoneController : null,
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(
+                    fontWeight: FontWeight.w300, color: Colors.grey[500]),
+                prefixIcon:
+                    icon != null ? Icon(icon, color: Colors.grey[500]) : null,
+                border: InputBorder.none,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              ),
+              validator: validator,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,20 +127,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          ),
+              context, MaterialPageRoute(builder: (context) => LoginScreen())),
         ),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title:
+            Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        centerTitle: true, // This centers the title in the AppBar
+        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -73,56 +142,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: _buildAvatar(),
-                ),
+                _buildAvatar(),
                 SizedBox(height: 16),
-                Text(
-                  'Jane Doe',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text('Jane Doe',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: Text(
-                    'Developer',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
+                Text('Developer', style: TextStyle(color: Colors.grey)),
                 SizedBox(height: 32),
                 _buildTextField(
-                  label: 'Your Email',
+                  label: 'Email',
                   hint: 'jane@gmail.com',
                   icon: Icons.mail,
                   isEmail: true,
                   onChanged: (value) => email = value,
                   isValid: emailValid,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please fill out this field';
-                    }
-                    if (!emailRegEx.hasMatch(value)) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value!.isEmpty
+                      ? 'Email field is required'
+                      : (emailRegEx.hasMatch(value)
+                          ? null
+                          : 'Please enter a valid email address'),
                 ),
-                // Email input
-                _buildPhoneTextField(),
-                // Phone number input
+                _buildTextField(
+                  label: 'Phone Number',
+                  hint: '+254182729202',
+                  icon: Icons.phone,
+                  isNumeric: true,
+                  onChanged: (value) => phoneNumber = value,
+                  isValid: phoneValid,
+                  validator: (value) => value!.isEmpty
+                      ? 'Phone Number field is required'
+                      : (phoneRegEx.hasMatch(value)
+                          ? null
+                          : 'Please enter a valid phone number'),
+                ),
                 _buildTextField(
                   label: 'Career',
                   hint: 'Developer',
                   onChanged: (value) => career = value,
                   isValid: careerValid,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Career field is required' : null,
                 ),
                 _buildTextField(
                   label: 'Address',
@@ -130,35 +191,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   icon: Icons.location_on,
                   onChanged: (value) => address = value,
                   isValid: addressValid,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Address field is required' : null,
                 ),
                 SizedBox(height: 32),
-                // Using the LoginButton widget here with custom text "Save Changes"
                 LoginButton(
-                  buttonText: 'Save Changes', // Add the text parameter
-                  onPressed: () {
-                    // Trigger form validation
-                    setState(() {
-                      emailValid = email != null && email!.isNotEmpty;
-                      phoneValid =
-                          phoneNumber != null && phoneNumber!.isNotEmpty;
-                      careerValid = career != null && career!.isNotEmpty;
-                      addressValid = address != null && address!.isNotEmpty;
-                    });
-
-                    if (_formKey.currentState!.validate()) {
-                      // Save changes if form is valid
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Changes saved successfully!')),
-                      );
-
-                      // Navigate to the Login screen after saving changes
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    }
-                  },
-                ),
+                    buttonText: 'Save Changes', onPressed: _validateAndSave),
               ],
             ),
           ),
@@ -176,21 +214,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
-              colors: const [Colors.blue, Colors.purple, Colors.pink],
+              colors: [Colors.blue, Colors.purple, Colors.pink],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Container(
+            child: Image.asset(
+              'images/person_one.png',
               width: 80,
               height: 80,
-              color: Colors.white,
-              child: Image.asset(
-                'images/person_one.png',
-                fit: BoxFit.cover,
-              ),
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -200,129 +235,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: CircleAvatar(
             radius: 12,
             backgroundColor: Colors.orange,
-            child: Icon(
-              Icons.edit,
-              color: Colors.white,
-              size: 14,
-            ),
+            child: Icon(Icons.edit, color: Colors.white, size: 14),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    IconData? icon,
-    bool isNumeric = false,
-    bool isEmail = false,
-    int? maxLength, // Maximum length parameter
-    required ValueChanged<String> onChanged,
-    required bool isValid, // Check if the field is valid
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: isValid ? Colors.grey : Colors.red, // Set border color
-              width: 1,
-            ),
-          ),
-          child: TextFormField(
-            onChanged: onChanged,
-            keyboardType: isEmail
-                ? TextInputType.emailAddress // Email-specific keyboard
-                : isNumeric
-                    ? TextInputType.numberWithOptions(
-                        decimal: false) // Numeric keypad
-                    : TextInputType.text,
-            // Default keyboard for non-numeric fields
-            inputFormatters: [
-              if (isNumeric) FilteringTextInputFormatter.digitsOnly,
-              // Allow only digits
-              if (maxLength != null)
-                LengthLimitingTextInputFormatter(maxLength),
-              // Limit input length
-            ],
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w300,
-                color: Colors.grey[500],
-              ),
-              prefixIcon:
-                  icon != null ? Icon(icon, color: Colors.grey[500]) : null,
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            ),
-            validator: validator,
-          ),
-        ),
-        SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildPhoneTextField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Phone Number',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: phoneValid ? Colors.grey : Colors.red, // Set border color
-              width: 1,
-            ),
-          ),
-          child: TextFormField(
-            controller: phoneController,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(13),
-            ],
-            decoration: InputDecoration(
-              hintText: '+254182729202',
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w300,
-                color: Colors.grey[500],
-              ),
-              prefixIcon: Icon(
-                Icons.phone,
-                color: Colors.grey[500],
-              ),
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please fill out this field';
-              }
-              if (!phoneRegEx.hasMatch(value)) {
-                return 'Please enter a valid phone number';
-              }
-              return null;
-            },
-            onChanged: (value) => phoneNumber = value,
-          ),
-        ),
-        SizedBox(height: 16),
       ],
     );
   }
