@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>NSCameraUsageDescription</key>
+<string>We need access to your camera for scanning QR codes</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location for providing location-based features</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>We need access to your microphone for voice recording</string>
+<key>NSFaceIDUsageDescription</key>
+<string>We need access to Face ID to authenticate you</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:permission_handler/permission_handler.dart'; // Import permission_handler
 import 'package:spiral/widgets/auth_options.dart';
 import 'package:spiral/widgets/custom_text_field.dart';
 import 'package:spiral/widgets/login_button.dart';
@@ -20,38 +21,75 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _isPasswordVisible = false.obs;
 
+  @override
+  void initState() {
+    super.initState();
+    // Requesting permissions when the app is first opened
+    _requestPermissions();
+  }
+
+  // Request permissions method
+  Future<void> _requestPermissions() async {
+    // Check and request permissions only when needed
+    if (await Permission.camera.isGranted &&
+        await Permission.location.isGranted &&
+        await Permission.microphone.isGranted) {
+      print("Permissions already granted");
+    } else {
+      await Permission.camera.request();
+      await Permission.location.request();
+      await Permission.microphone.request();
+
+      // Check if permissions are granted
+      if (await Permission.camera.isGranted &&
+          await Permission.location.isGranted &&
+          await Permission.microphone.isGranted) {
+        print("Permissions granted");
+      } else {
+        print("Permissions denied");
+        // Optionally show a message guiding users to settings
+      }
+    }
+  }
+
   // Login or sign up with Firebase
   Future<void> _validateAndLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        // Print email and password for debugging
-        print("Email: ${_emailController.text.trim()}");
-        print("Password: ${_passwordController.text}");
-
         final userCredential = await _auth.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+
         if (userCredential.user != null) {
           Get.offAll(() => HomeDashboardScreen());
         }
       } on FirebaseAuthException catch (e) {
-        // Specific error handling
-        print("Firebase Auth Error: ${e.message}");
-
         if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-          final userCredential = await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
+          Get.snackbar(
+            "Login Failed",
+            "Invalid email or password.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
           );
-          if (userCredential.user != null) {
-            Get.offAll(() => HomeDashboardScreen());
-          }
         } else {
-          print("Error: ${e.message}");
+          Get.snackbar(
+            "Error",
+            e.message ?? "An unexpected error occurred.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
         }
       } catch (e) {
-        print("Unexpected Error: $e");
+        Get.snackbar(
+          "Error",
+          "An unexpected error occurred: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
       }
     }
   }

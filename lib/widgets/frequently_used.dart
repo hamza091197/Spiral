@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:spiral/widgets/bank_transfer.dart';
 import 'package:spiral/widgets/callid.dart';
 import 'package:spiral/widgets/credit_champ.dart';
@@ -14,14 +15,14 @@ class FrequentlyUsed extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.zero, // Removed left and right padding
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Frequently Used',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp, // Responsive font size
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -32,7 +33,7 @@ class FrequentlyUsed extends StatelessWidget {
                 child: Text(
                   'View all',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14.sp, // Responsive font size
                     color: Colors.blue,
                   ),
                 ),
@@ -40,9 +41,9 @@ class FrequentlyUsed extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 16),
+        SizedBox(height: 16.h), // Responsive height
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.zero, // Removed left and right padding for the scrollable row
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal, // Horizontal Scroll View
             child: Row(
@@ -53,28 +54,28 @@ class FrequentlyUsed extends StatelessWidget {
                   Colors.green[100]!,
                   context, // Pass context to navigate
                 ),
-                SizedBox(width: 16), // Space between items
+                SizedBox(width: 16.w), // Responsive space between items
                 _buildFeatureIcon(
                   Icons.credit_card,
                   'Credit\nChamp',
                   Colors.red[100]!,
                   context,
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 16.w), // Responsive space
                 _buildFeatureIcon(
                   Icons.account_balance,
                   'Bank\nTransfer',
                   Colors.yellow[100]!,
                   context,
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 16.w), // Responsive space
                 _buildFeatureIcon(
                   Icons.request_page,
                   'Request\nMoney',
                   Colors.blue[100]!,
                   context,
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 16.w), // Responsive space
                 _buildFeatureIcon(
                   Icons.history,
                   'Transaction\nHistory',
@@ -97,7 +98,7 @@ class FrequentlyUsed extends StatelessWidget {
       ) {
     return GestureDetector(
       onTap: () {
-        // Navigate to CallerIdScreen when icon is clicked
+        // Navigate to respective screen based on the label
         if (label == 'Caller\nID') {
           Navigator.push(
             context,
@@ -134,20 +135,20 @@ class FrequentlyUsed extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.r), // Responsive border radius
             ),
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.w), // Responsive padding
             child: Icon(
               icon,
-              size: 28,
+              size: 28.sp, // Responsive icon size
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 8.h), // Responsive height
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12.sp), // Responsive font size
           ),
         ],
       ),

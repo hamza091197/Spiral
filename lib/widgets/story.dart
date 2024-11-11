@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StoryWidget extends StatelessWidget {
   final List<Map<String, String>> stories = [
@@ -10,58 +11,85 @@ class StoryWidget extends StatelessWidget {
     // Add more stories as needed
   ];
 
-   StoryWidget({super.key});
+  StoryWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize ScreenUtil for screen scaling
+    ScreenUtil.init(context, designSize: Size(360, 690), minTextAdapt: true);
+
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+      padding: EdgeInsets.zero, // Removed left padding, keep right padding
       child: Row(
-        children: stories.map((story) => _buildStoryItem(story)).toList(),
+        children: _buildStoryItems(context),
       ),
     );
   }
 
+  List<Widget> _buildStoryItems(BuildContext context) {
+    List<Widget> storyWidgets = [];
+    // Get the screen width using ScreenUtil
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Determine how many stories per row depending on the screen width
+    int storiesPerRow = 5; // Default for larger screens
+    if (screenWidth < 600) {
+      storiesPerRow = 3; // Mobile
+    } else if (screenWidth < 1200) {
+      storiesPerRow = 4; // Tablet
+    }
+
+    for (int i = 0; i < stories.length; i++) {
+      storyWidgets.add(_buildStoryItem(stories[i]));
+      if ((i + 1) % storiesPerRow == 0) {
+        storyWidgets.add(
+            SizedBox(width: 16.w)); // Add space after every row (responsive)
+      }
+    }
+    return storyWidgets;
+  }
+
   Widget _buildStoryItem(Map<String, String> story) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 8.w), // Responsive padding
       child: Column(
         children: [
           Stack(
             alignment: Alignment.bottomRight,
             children: [
               Container(
-                padding: EdgeInsets.all(3), // Border thickness
+                padding: EdgeInsets.all(3.h), // Border thickness (responsive)
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.blue, width: 2),
+                  border: Border.all(color: Colors.blue, width: 2.w),
                 ),
                 child: CircleAvatar(
-                  radius: 32,
+                  radius: 32.r, // Responsive radius for avatar
                   backgroundImage: AssetImage(story['image']!),
                 ),
               ),
-              if (story['name'] == "My Story") // Add "+" icon to "My Story" only
+              if (story['name'] ==
+                  "My Story") // Add "+" icon to "My Story" only
                 Positioned(
                   right: 0,
                   bottom: 0,
                   child: CircleAvatar(
-                    radius: 10,
+                    radius: 10.r, // Responsive radius for "+" icon
                     backgroundColor: Colors.blue,
                     child: Icon(
                       Icons.add,
-                      size: 14,
+                      size: 14.sp, // Responsive size for icon
                       color: Colors.white,
                     ),
                   ),
                 ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 8.h), // Responsive height between story and name
           Text(
             story['name']!,
-            style: TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12.sp), // Responsive font size
           ),
         ],
       ),

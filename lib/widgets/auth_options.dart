@@ -1,8 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:spiral/passkey_sign_in_screen.dart';
 
-class AuthOptions extends StatelessWidget {
+class AuthOptions extends StatefulWidget {
   const AuthOptions({super.key});
+
+  @override
+  AuthOptionsState createState() => AuthOptionsState();
+}
+
+class AuthOptionsState extends State<AuthOptions> {
+  final LocalAuthentication auth = LocalAuthentication();
+
+  bool isFingerprintAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkBiometricAvailability();
+  }
+
+  Future<void> checkBiometricAvailability() async {
+    bool canAuthenticate = await auth.isDeviceSupported();
+    if (canAuthenticate) {
+      // Get the available biometrics enrolled
+      List<BiometricType> availableBiometrics =
+          await auth.getAvailableBiometrics();
+
+      setState(() {
+        // Check if biometrics are available
+        isFingerprintAvailable = availableBiometrics.isNotEmpty &&
+            (availableBiometrics.contains(BiometricType.strong) ||
+                availableBiometrics.contains(BiometricType.face));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
