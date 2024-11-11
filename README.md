@@ -39,5 +39,5 @@ The app utilizes GetX for state management, allowing for reactive programming. T
 **Security**
 Sensitive user information, such as tokens and passwords, is securely stored using the Flutter Secure Storage package.
 
-**New Features**
+**New Feature**
 If the device does not support a fingerprint sensor, it will not prompt you to use it.
