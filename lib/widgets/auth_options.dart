@@ -25,7 +25,7 @@ class AuthOptionsState extends State<AuthOptions> {
     if (canAuthenticate) {
       // Get the available biometrics enrolled
       List<BiometricType> availableBiometrics =
-          await auth.getAvailableBiometrics();
+      await auth.getAvailableBiometrics();
 
       setState(() {
         // Check if biometrics are available
@@ -41,27 +41,28 @@ class AuthOptionsState extends State<AuthOptions> {
     return SingleChildScrollView(  // Wrap the whole column with SingleChildScrollView
       child: Column(
         children: [
-          ElevatedButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PasskeySignInScreen()), // Navigating to PinEntryScreen
-            ),
-            icon: const Icon(Icons.fingerprint, color: Colors.black),
-            label: const Text(
-              'Sign in with Fingerprint',
-              style: TextStyle(color: Colors.black), // Text color set to black
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              // Background color set to white
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              minimumSize: const Size(300, 50),
-              // Sets width to 300 and height to 50
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (isFingerprintAvailable)  // Conditionally render the button
+            ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PasskeySignInScreen()), // Navigating to PasskeySignInScreen
+              ),
+              icon: const Icon(Icons.fingerprint, color: Colors.black),
+              label: const Text(
+                'Sign in with Fingerprint',
+                style: TextStyle(color: Colors.black), // Text color set to black
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                // Background color set to white
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                minimumSize: const Size(300, 50),
+                // Sets width to 300 and height to 50
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-          ),
           const SizedBox(height: 7),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
