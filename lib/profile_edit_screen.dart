@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // Import ScreenUtil
 import 'package:spiral/login_screen.dart';
 import 'package:spiral/widgets/login_button.dart';
-
 import 'caller_id_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -23,21 +23,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       addressValid = true;
 
   final emailRegEx =
-      RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+  RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
   final phoneRegEx = RegExp(r"^\+?[0-9]{10,13}$");
 
   @override
   void initState() {
     super.initState();
     phoneController.addListener(() {
-      // Automatically adds '+' if not present and ensures the length does not exceed 13 characters
       if (!phoneController.text.startsWith('+') &&
           phoneController.text.isNotEmpty) {
         phoneController.text = '+${phoneController.text}';
         phoneController.selection =
             TextSelection.collapsed(offset: phoneController.text.length);
       }
-      // Limit the phone number to 13 digits (including '+')
       if (phoneController.text.length > 13) {
         phoneController.text = phoneController.text.substring(0, 13);
         phoneController.selection =
@@ -64,7 +62,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Changes saved successfully!')),
       );
-      // Use GetX for navigation
       Get.to(() => LoginScreen());
     }
   }
@@ -80,40 +77,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String? Function(String?) validator,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: EdgeInsets.only(bottom: 16.0.h), // Scale bottom padding
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(label, style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              side: BorderSide(
-                  color: isValid ? Colors.grey : Colors.red, width: 1),
+              side: BorderSide(color: isValid ? Colors.grey : Colors.red, width: 1),
             ),
             child: TextFormField(
               onChanged: onChanged,
               keyboardType: isEmail
                   ? TextInputType.emailAddress
                   : isNumeric
-                      ? TextInputType.numberWithOptions(decimal: false)
-                      : TextInputType.text,
+                  ? TextInputType.numberWithOptions(decimal: false)
+                  : TextInputType.text,
               inputFormatters: isNumeric
                   ? [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(13),
-                    ]
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(13),
+              ]
                   : [],
               controller: icon == Icons.phone ? phoneController : null,
               decoration: InputDecoration(
                 hintText: hint,
-                hintStyle: TextStyle(
-                    fontWeight: FontWeight.w300, color: Colors.grey[500]),
-                prefixIcon:
-                    icon != null ? Icon(icon, color: Colors.grey[500]) : null,
+                hintStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.grey[500]),
+                prefixIcon: icon != null ? Icon(icon, color: Colors.grey[500]) : null,
                 border: InputBorder.none,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0.h, horizontal: 16.0.w), // Scale padding
               ),
               validator: validator,
             ),
@@ -125,15 +118,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize ScreenUtil to scale the UI based on screen size
+    ScreenUtil.init(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () =>
-              Get.to(() => CallerIDScreen()), // Use GetX for navigation
+          onPressed: () => Get.to(() => CallerIDScreen()),
         ),
-        title:
-            Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -141,19 +135,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w), // Scale padding
           child: Form(
             key: _formKey,
             child: Column(
               children: [
                 _buildAvatar(),
-                SizedBox(height: 16),
-                Text('Jane Doe',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
+                SizedBox(height: 16.h), // Scale height
+                Text('Jane Doe', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
+                SizedBox(height: 8.h), // Scale height
                 Text('Developer', style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 32),
+                SizedBox(height: 32.h), // Scale height
                 _buildTextField(
                   label: 'Email',
                   hint: 'jane@gmail.com',
@@ -163,9 +155,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   isValid: emailValid,
                   validator: (value) => value!.isEmpty
                       ? 'Email field is required'
-                      : (emailRegEx.hasMatch(value)
-                          ? null
-                          : 'Please enter a valid email address'),
+                      : (emailRegEx.hasMatch(value) ? null : 'Please enter a valid email address'),
                 ),
                 _buildTextField(
                   label: 'Phone Number',
@@ -176,17 +166,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   isValid: phoneValid,
                   validator: (value) => value!.isEmpty
                       ? 'Phone Number field is required'
-                      : (phoneRegEx.hasMatch(value)
-                          ? null
-                          : 'Please enter a valid phone number'),
+                      : (phoneRegEx.hasMatch(value) ? null : 'Please enter a valid phone number'),
                 ),
                 _buildTextField(
                   label: 'Career',
                   hint: 'Developer',
                   onChanged: (value) => career = value,
                   isValid: careerValid,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Career field is required' : null,
+                  validator: (value) => value!.isEmpty ? 'Career field is required' : null,
                 ),
                 _buildTextField(
                   label: 'Address',
@@ -194,10 +181,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   icon: Icons.location_on,
                   onChanged: (value) => address = value,
                   isValid: addressValid,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Address field is required' : null,
+                  validator: (value) => value!.isEmpty ? 'Address field is required' : null,
                 ),
-                SizedBox(height: 32),
+                SizedBox(height: 20.h), // Scale height
                 LoginButton(
                     buttonText: 'Save Changes', onPressed: _validateAndSave),
               ],
@@ -212,33 +198,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.all(4),
+          padding: EdgeInsets.all(4.w), // Scale padding
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r), // Scale radius
             gradient: LinearGradient(
-              colors: [Colors.blue, Colors.purple, Colors.pink],
+              colors: const [Colors.blue, Colors.purple, Colors.pink],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              'images/person_one.png',
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+            borderRadius: BorderRadius.circular(8.r), // Scale radius
+            child: Container(
+              width: 80.w, // Scale width
+              height: 80.h, // Scale height
+              color: Colors.white,
+              child: Image.asset(
+                'images/person_one.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
+          bottom: 0.h, // Scale bottom positioning
+          right: 0.w, // Scale right positioning
           child: CircleAvatar(
-            radius: 12,
+            radius: 12.r, // Scale radius
             backgroundColor: Colors.orange,
-            child: Icon(Icons.edit, color: Colors.white, size: 14),
+            child: Icon(
+              Icons.edit,
+              color: Colors.white,
+              size: 14.sp, // Scale icon size
+            ),
           ),
         ),
       ],

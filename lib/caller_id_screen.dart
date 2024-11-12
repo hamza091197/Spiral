@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'; // Import ScreenUtil
 import 'package:get/get.dart'; // Import GetX
+import 'package:spiral/pin_entry_screen.dart';
 import 'package:spiral/profile_edit_screen.dart';
 
 class CallerIDScreen extends StatelessWidget {
@@ -15,8 +16,8 @@ class CallerIDScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Get
-              .back(), // Replace Navigator.push with Get.back() for back navigation
+          onPressed: () => Get.to(
+              PinEntryScreen()), // Replace Navigator.push with Get.to() for navigating to EditProfileScreen
         ),
         title: Text(
           'Caller ID',
