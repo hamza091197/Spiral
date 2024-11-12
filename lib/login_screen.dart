@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart'; // Import permission_handler
 import 'package:spiral/widgets/auth_options.dart';
 import 'package:spiral/widgets/custom_text_field.dart';
 import 'package:spiral/widgets/login_button.dart';
+
 import 'home_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -150,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             return 'Please enter your email';
                           }
                           if (!RegExp(
-                              r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                                  r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                               .hasMatch(value)) {
                             return 'Please enter a valid email address';
                           }
@@ -159,27 +160,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       Obx(() => CustomTextField(
-                        controller: _passwordController,
-                        label: 'Password',
-                        hintText: 'Password',
-                        isPassword: !_isPasswordVisible.value,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible.value
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            _isPasswordVisible.value = !_isPasswordVisible.value;
-                          },
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          return null;
-                        },
-                      )),
+                            controller: _passwordController,
+                            label: 'Password',
+                            hintText: 'Password',
+                            isPassword: !_isPasswordVisible.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible.value
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                _isPasswordVisible.value =
+                                    !_isPasswordVisible.value;
+                              },
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          )),
                       const SizedBox(height: 16),
                       LoginButton(
                         onPressed: _validateAndLogin,

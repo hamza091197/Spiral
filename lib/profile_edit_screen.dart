@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:spiral/login_screen.dart';
 import 'package:spiral/widgets/login_button.dart';
+
+import 'caller_id_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -61,8 +64,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Changes saved successfully!')),
       );
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      // Use GetX for navigation
+      Get.to(() => LoginScreen());
     }
   }
 
@@ -126,8 +129,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LoginScreen())),
+          onPressed: () =>
+              Get.to(() => CallerIDScreen()), // Use GetX for navigation
         ),
         title:
             Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),

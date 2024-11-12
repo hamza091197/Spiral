@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:spiral/caller_id_screen.dart';
 import 'package:spiral/login_screen.dart';
+
+import 'finger_authentication_layout.dart';
 
 class PinEntryScreen extends StatefulWidget {
   const PinEntryScreen({super.key});
@@ -11,6 +16,7 @@ class PinEntryScreen extends StatefulWidget {
 
 class _PinEntryScreenState extends State<PinEntryScreen> {
   List<String> pin = ["", "", "", ""];
+  final LocalAuthentication auth = LocalAuthentication();
 
   void updatePin(String digit, [bool isDelete = false]) {
     setState(() {
@@ -24,26 +30,24 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
 
   void _onSubmit() {
     if (pin.contains("")) {
-      // Show error snackbar if the pin is incomplete
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Pin is incomplete. Please enter all 4 digits.'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
+      Get.snackbar(
+        'Incomplete Pin',
+        'Please enter all 4 digits.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: EdgeInsets.all(10),
       );
     } else {
-      // Handle pin submission here
-      // For now, just navigate to CallerIDScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => CallerIDScreen()),
-      );
+      Get.to(() => CallerIDScreen());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Initialize ScreenUtil to scale the UI based on screen size
+    ScreenUtil.init(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -51,10 +55,7 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          ),
+          onPressed: () => Get.to(() => LoginScreen()),
         ),
       ),
       body: Padding(
@@ -63,13 +64,13 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildAvatar(),
-            SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildUserInfo(),
-            SizedBox(height: 24),
+            SizedBox(height: 24.h),
             _buildPinDisplay(),
-            SizedBox(height: 24),
+            SizedBox(height: 24.h),
             _buildSubmitButton(),
-            SizedBox(height: 24),
+            SizedBox(height: 24.h),
             _buildKeypad(),
           ],
         ),
@@ -107,7 +108,8 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
   Widget _buildUserInfo() {
     return Column(
       children: const [
-        Text('Jane Doe Matthews', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text('Jane Doe Matthews',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         Text('0712364748', style: TextStyle(color: Colors.grey)),
       ],
     );
@@ -118,8 +120,8 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(4, (index) {
         return Container(
-          width: 40,
-          height: 40,
+          width: 40.w,
+          height: 40.h,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(8.0),
@@ -128,7 +130,7 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
           child: Center(
             child: Text(
               pin[index],
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              style: TextStyle(fontSize: 20.sp, color: Colors.black),
             ),
           ),
         );
@@ -147,9 +149,9 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: ElevatedButton(
-        onPressed: _onSubmit, // Call _onSubmit method when pressed
+        onPressed: _onSubmit,
         style: ElevatedButton.styleFrom(
-          minimumSize: Size(double.infinity, 48),
+          minimumSize: Size(double.infinity, 48.h),
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
@@ -181,11 +183,13 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(width: 60),
+            SizedBox(width: 60.w),
             _buildNumberButton("0"),
             IconButton(
-              onPressed: () => updatePin("", true),
-              icon: Icon(Icons.fingerprint, size: 30, color: Colors.grey),
+              onPressed: () {
+                Get.to(() => FingerAuthenticationLayout());
+              },
+              icon: Icon(Icons.fingerprint, size: 30.sp, color: Colors.grey),
             ),
           ],
         ),
@@ -199,8 +203,8 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
         if (pin.contains("")) updatePin(number);
       },
       child: Container(
-        width: 60,
-        height: 60,
+        width: 60.w,
+        height: 60.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.grey[200],
@@ -208,7 +212,7 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
         child: Center(
           child: Text(
             number,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
           ),
         ),
       ),
